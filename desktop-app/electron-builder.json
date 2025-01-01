@@ -1,0 +1,42 @@
+{
+    "appId": "com.yourcompany.workpattern",
+    "productName": "Work Pattern",
+    "directories": {
+        "output": "dist",
+        "buildResources": "public"
+    },
+    "files": [
+        "dist/**/*",
+        "src/**/*",
+        "package.json",
+        "index.js",
+        "public/**/*",
+        "node_modules/**/*"
+    ],
+    "mac": {
+        "icon": "public/images/logo.png",
+        "target": [
+            "dmg",
+            "zip"
+        ]
+    },
+    "win": {
+        "icon": "public/images/logo.png",
+        "target": [
+            "nsis"
+        ]
+    },
+    "linux": {
+        "icon": "public/images/logo.png",
+        "target": [
+            "AppImage",
+            "deb"
+        ]
+    },
+    "publish": {
+        "provider": "github",
+        "owner": "abdullahalshahin",
+        "repo": "work-pattern"
+    },
+    "asar": true
+}

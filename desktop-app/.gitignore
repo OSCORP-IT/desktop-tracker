@@ -1,0 +1,20 @@
+node_modules/
+dist/
+
+.env
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+
+# Electron specific
+*.asar
+*.db
+*.pdb
+
+# Miscellaneous
+coverage/
+*.bak
+*.tmp
+*.temp
