@@ -15,12 +15,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// ----------------------- public page route section ----------------------- //
+Route::get('/', [PublicPageController::class, 'index']);
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
+// ----------------------- ADMIN panel route section ----------------------- //
+Route::middleware('auth')->group(function() {
+    Route::prefix('admin-panel')->group(function() {
+        Route::get('/dashboard', [AdminPanel\DashboardController::class, 'index']);
+
+        Route::resource('projects', AdminPanel\ProjectController::class);
+        Route::resource('users', AdminPanel\UserController::class);
+
+        Route::get('/my-account', [AdminPanel\MyAccountController::class, 'my_account']);
+        Route::get('/my-account-edit', [AdminPanel\MyAccountController::class, 'my_account_edit']);
+        Route::put('/my-account-update', [AdminPanel\MyAccountController::class, 'my_account_update']);
+
+        Route::get('/system-settings', [AdminPanel\SystemSettingsController::class, 'index']);
+    });
+});
 
 require __DIR__.'/auth.php';

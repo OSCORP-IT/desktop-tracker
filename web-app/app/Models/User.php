@@ -19,9 +19,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+        'employee_id', 'name', 'email', 'password', 'gender', 'date_of_birth', 'mobile_number', 
+        'security', 'address', 'profile_image', 'theme_color', 'status'
     ];
 
     /**
@@ -42,4 +41,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function projects() {
+        return $this->hasManyThrough(Project::class, ProjectTeamMember::class, 'user_id', 'id', 'id', 'project_id');
+    }
 }
