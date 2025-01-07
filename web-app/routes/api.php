@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::get('fetch-project-team-members-by-project-id', [AdminPanel\ProjectController::class, 'fetch_project_team_members_by_project_id']);

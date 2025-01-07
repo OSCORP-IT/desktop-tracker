@@ -18,6 +18,10 @@ class Task extends Model {
         "Pending", "In Progress", "Review", "Completed"
     ];
 
+    public function assigned_user() {
+        return $this->belongsTo(User::class, 'assigned_to', 'id');
+    }
+
     public function task_comments() {
         return $this->hasMany(TaskComments::class, 'task_id', 'id');
     }

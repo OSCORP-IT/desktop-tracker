@@ -60,10 +60,20 @@
                             </div>
                         </li>
 
+                        <li class="side-nav-title side-nav-item"> App </li>
+
                         <li class="side-nav-item">
-                            <a href="{{ url('admin-panel/products') }}" class="side-nav-link">
-                                <i class="uil-box"></i>
-                                <span> Product </span>
+                            <a href="{{ url('admin-panel/projects') }}" class="side-nav-link">
+                                <i class="uil-briefcase"></i>
+                                <span> Projects </span>
+                            </a>
+                        </li>
+
+
+                        <li class="side-nav-item">
+                            <a href="{{ url('admin-panel/tasks') }}" class="side-nav-link">
+                                <i class="uil-briefcase"></i>
+                                <span> Tasks </span>
                             </a>
                         </li>
                         

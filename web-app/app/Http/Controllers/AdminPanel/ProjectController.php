@@ -220,4 +220,27 @@ class ProjectController extends Controller
         return redirect()->to('admin-panel/projects')
             ->with('success', 'Deleted Successfully.');
     }
+
+    public function fetch_project_team_members_by_project_id(Request $request) {
+        $request->validate([
+            'project_id' => ['required', 'numeric'],
+        ]);
+
+        $project = Project::find($request->project_id);
+
+        if ($project) {
+            return response()->json([
+                'success' => true,
+                'message' => "No upcoming meetings found.",
+                'project_team_members' => $project->project_team_members
+            ], 200);
+        }
+        else {
+            return response()->json([
+                'success' => true,
+                'message' => "Data not found!!!",
+                'project_team_members' => []
+            ], 200);
+        }
+    }
 }
