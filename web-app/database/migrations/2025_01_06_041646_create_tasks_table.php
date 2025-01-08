@@ -24,6 +24,7 @@ return new class extends Migration {
             $table->json('sub_tasks')->nullable();
             $table->json('attachments')->nullable();
             $table->enum('priority', ["High", "Medium", "Low"])->default("Medium");
+            $table->unsignedBigInteger('order_number');
             $table->enum('status', ["Pending", "In Progress", "Review", "Completed", "Late Completion"])->default('Pending');
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();

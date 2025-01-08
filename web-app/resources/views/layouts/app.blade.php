@@ -69,7 +69,6 @@
                             </a>
                         </li>
 
-
                         <li class="side-nav-item">
                             <a href="{{ url('admin-panel/tasks') }}" class="side-nav-link">
                                 <i class="uil-briefcase"></i>
@@ -77,6 +76,12 @@
                             </a>
                         </li>
                         
+                        <li class="side-nav-item">
+                            <a href="{{ url('admin-panel/my-tasks') }}" class="side-nav-link">
+                                <i class="uil-briefcase"></i>
+                                <span> My Tasks </span>
+                            </a>
+                        </li>
             
                         <li class="side-nav-title side-nav-item"> User Management </li>
             
@@ -103,7 +108,7 @@
                             </a>
                         </li>
                     </ul>
-            
+
                     <div class="clearfix"></div>
                 </div>
             </div>            

@@ -18,6 +18,10 @@ class Task extends Model {
         "Pending", "In Progress", "Review", "Completed"
     ];
 
+    public function project() {
+        return $this->belongsTo(Project::class, 'project_id', 'id');
+    }
+
     public function assigned_user() {
         return $this->belongsTo(User::class, 'assigned_to', 'id');
     }

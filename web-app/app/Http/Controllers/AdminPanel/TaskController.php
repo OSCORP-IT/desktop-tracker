@@ -81,11 +81,14 @@ class TaskController extends Controller
             'start_time' => ['required', 'date'],
             'end_time' => ['required', 'date', 'after_or_equal:start_time'],
         ]);
+
+        $orderNumber = Task::max('order_number') + 1;
     
         $task = Task::create([
             'project_id' => $validated['project_id'],
             'title' => $validated['title'],
             'priority' => $validated['priority'],
+            'order_number' => $orderNumber,
             'description' => $validated['description'] ?? null,
             'assigned_to' => $validated['assigned_to'],
             'start_time' => $validated['start_time'],
@@ -93,9 +96,9 @@ class TaskController extends Controller
             'status' => 'Pending',
         ]);
 
-        // $user = User::find($validated['assigned_to']);
+        $user = User::find($validated['assigned_to']);
 
-        // Mail::to($user->email)->send(new TaskAssigned($task));
+        Mail::to($user->email)->send(new TaskAssigned($task));
     
         return redirect()->to('admin-panel/tasks')
             ->with('success', 'Task created successfully.');
@@ -148,10 +151,6 @@ class TaskController extends Controller
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
         ]);
-
-        $user = User::find($validated['assigned_to']);
-
-        Mail::to($user->email)->send(new TaskAssigned($task));
     
         return redirect()->to('admin-panel/tasks')
             ->with('success', 'Task updated successfully.');
