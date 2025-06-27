@@ -23,20 +23,12 @@ Route::middleware('auth')->group(function() {
     Route::prefix('admin-panel')->group(function() {
         Route::get('/dashboard', [AdminPanel\DashboardController::class, 'index']);
 
-        Route::resource('projects', AdminPanel\ProjectController::class);
-        Route::resource('tasks', AdminPanel\TaskController::class);
-        Route::resource('users', AdminPanel\UserController::class);
-
-        Route::get('my-tasks', [AdminPanel\MyTaskController::class, 'index']);
-        Route::get('my-tasks/{task}/show', [AdminPanel\MyTaskController::class, 'show']);
-        Route::post('my-tasks/{task}/submit-comment', [AdminPanel\MyTaskController::class, 'submit_comment']);
-        Route::post('my-tasks/{task}/change-status', [AdminPanel\MyTaskController::class, 'change_status']);
+        //
 
         Route::get('/my-account', [AdminPanel\MyAccountController::class, 'my_account']);
         Route::get('/my-account-edit', [AdminPanel\MyAccountController::class, 'my_account_edit']);
         Route::put('/my-account-update', [AdminPanel\MyAccountController::class, 'my_account_update']);
-
-        Route::get('/system-settings', [AdminPanel\SystemSettingsController::class, 'index']);
+        Route::get('/change-theme-color', [AdminPanel\MyAccountController::class, 'change_theme_color']);
     });
 });
 

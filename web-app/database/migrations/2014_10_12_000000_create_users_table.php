@@ -15,12 +15,12 @@ return new class extends Migration {
             $table->id();
             $table->string('employee_id');
             $table->string('name');
-            $table->enum('gender', ["Male", "Female", "Oters"]);
+            $table->enum('gender', ["Male", "Female", "Others"]);
             $table->date('date_of_birth');
             $table->string('mobile_number');
             $table->string('email');
             $table->string('password');
-            $table->string('security')->nullable();
+            $table->string('position')->nullable();
             $table->text('address')->nullable();
             $table->string('profile_image')->nullable();
             $table->enum('theme_color', ['Light', 'Dark'])->default('Light');

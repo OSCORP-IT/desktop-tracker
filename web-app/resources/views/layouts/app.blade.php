@@ -7,11 +7,11 @@
 
         <title>{{ $page_title ?? '' }} {{ config('app.name', 'Laravel') }}</title>
 
-        <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
+        <link rel="shortcut icon" href="{{ asset('hyper/images/favicon.ico') }}">
 
-        <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset('assets/css/app.min.css') }}" rel="stylesheet" type="text/css" id="light-style" />
-        <link href="{{ asset('assets/css/app-dark.min.css') }}" rel="stylesheet" type="text/css" id="dark-style" />
+        <link href="{{ asset('hyper/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset('hyper/css/app.min.css') }}" rel="stylesheet" type="text/css" id="light-style" />
+        <link href="{{ asset('hyper/css/app-dark.min.css') }}" rel="stylesheet" type="text/css" id="dark-style" />
 
         {{ $style ?? '' }}
     </head>
@@ -20,19 +20,19 @@
             <div class="leftside-menu">
                 <a href="{{ url('admin-panel/dashboard') }}" class="logo text-center logo-light">
                     <span class="logo-lg">
-                        <img src="{{ asset('assets/images/logo.png') }}" alt="" height="16">
+                        <img src="{{ asset('hyper/images/logo.png') }}" alt="" height="16">
                     </span>
                     <span class="logo-sm">
-                        <img src="{{ asset('assets/images/logo_sm.png') }}" alt="" height="16">
+                        <img src="{{ asset('hyper/images/logo_sm.png') }}" alt="" height="16">
                     </span>
                 </a>
             
                 <a href="{{ url('admin-panel/dashboard') }}" class="logo text-center logo-dark">
                     <span class="logo-lg">
-                        <img src="{{ asset('assets/images/logo-dark.png') }}" alt="" height="16">
+                        <img src="{{ asset('hyper/images/logo-dark.png') }}" alt="" height="16">
                     </span>
                     <span class="logo-sm">
-                        <img src="{{ asset('assets/images/logo_sm_dark.png') }}" alt="" height="16">
+                        <img src="{{ asset('hyper/images/logo_sm_dark.png') }}" alt="" height="16">
                     </span>
                 </a>
             
@@ -88,7 +88,7 @@
                         <li class="side-nav-item">
                             <a href="{{ url('admin-panel/users') }}" class="side-nav-link">
                                 <i class="uil-users-alt"></i>
-                                <span> Employee </span>
+                                <span> Users </span>
                             </a>
                         </li>
             
@@ -147,7 +147,7 @@
                                         @if (Auth::user()->profile_image)
                                             <img src="{{ url('images/clients', Auth::user()->profile_image) }}" alt="{{ Auth::user()->full_name ?? "" }}" class="rounded-circle">
                                         @else
-                                            <img src="{{ asset('assets/images/avator.png') }}" alt="user-image" class="rounded-circle">
+                                            <img src="{{ asset('hyper/images/avator.png') }}" alt="user-image" class="rounded-circle">
                                         @endif
                                     </span>
                                     <span>
@@ -244,11 +244,11 @@
             </div>
         </div>
         
-        <script src="{{ asset('assets/js/vendor.min.js') }}"></script>
+        <script src="{{ asset('hyper/js/vendor.min.js') }}"></script>
 
         {{ $script ?? '' }}
 
-        <script src="{{ asset('assets/js/app.min.js') }}"></script>
+        <script src="{{ asset('hyper/js/app.min.js') }}"></script>
 
         <script type="text/javascript">
             function changeThemeColor(color) {

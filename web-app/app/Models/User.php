@@ -9,8 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
-{
+class User extends Authenticatable {
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     /**
@@ -19,8 +18,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'employee_id', 'name', 'email', 'password', 'gender', 'date_of_birth', 'mobile_number', 
-        'security', 'address', 'profile_image', 'theme_color', 'status'
+        'employee_id', 'name', 'gender', 'date_of_birth', 
+        'mobile_number', 'email', 'password', 'position', 'address', 
+        'profile_image', 'theme_color', 'status'
     ];
 
     /**
@@ -40,9 +40,26 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'date_of_birth' => 'date',
     ];
 
+    public function managed_projects() {
+        return $this->hasMany(Project::class, 'manager_id', 'id');
+    }
+
     public function projects() {
-        return $this->hasManyThrough(Project::class, ProjectTeamMember::class, 'user_id', 'id', 'id', 'project_id');
+        return $this->hasManyThrough(Project::class, ProjectTeamMember::class, 'assigned_to_id', 'id', 'id', 'project_id');
+    }
+
+    public function assigned_tasks() {
+        return $this->hasMany(Task::class, 'assigned_to_id', 'id');
+    }
+
+    public function created_tasks() {
+        return $this->hasMany(Task::class, 'assigned_from_id', 'id');
+    }
+
+    public function comments() {
+        return $this->morphMany(Comment::class, 'commenter');
     }
 }

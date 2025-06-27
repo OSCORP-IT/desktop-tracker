@@ -8,8 +8,7 @@ use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-class UserSeeder extends Seeder
-{
+class UserSeeder extends Seeder {
     /**
      * Run the database seeds.
      *
@@ -24,8 +23,8 @@ class UserSeeder extends Seeder
             'mobile_number' => '01XXXXXXXXX',
             'email' => "admin@example.com",
             'password' => bcrypt('123456'),
-            'security' => 123456,
-            'status' => "active",
+            'position' => "Administrator",
+            'status' => "Active",
         ]);
 
         $role = Role::create([
