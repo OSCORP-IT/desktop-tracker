@@ -7,11 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Attachment extends Model {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
-    protected $fillable = [
-        'file_path', 'original_name', 'mime_type', 'size'
-    ];
+    protected $guarded = [];
 
     public function attachmentable() {
         return $this->morphTo();

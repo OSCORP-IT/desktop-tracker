@@ -23,7 +23,10 @@ Route::middleware('auth')->group(function() {
     Route::prefix('admin-panel')->group(function() {
         Route::get('/dashboard', [AdminPanel\DashboardController::class, 'index']);
 
-        //
+        Route::resource('projects', AdminPanel\ProjectController::class);
+        Route::resource('tasks', AdminPanel\TaskController::class);
+        Route::resource('roles', AdminPanel\RoleController::class);
+        Route::resource('users', AdminPanel\UserController::class);
 
         Route::get('/my-account', [AdminPanel\MyAccountController::class, 'my_account']);
         Route::get('/my-account-edit', [AdminPanel\MyAccountController::class, 'my_account_edit']);

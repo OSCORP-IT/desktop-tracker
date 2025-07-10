@@ -9,21 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Task extends Model {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'project_id',
-        'assigned_from_id',
-        'assigned_to_id',
-        'title',
-        'start_time',
-        'due_time',
-        'description',
-        'sub_tasks',
-        'priority',
-        'estimated_time',
-        'order_number',
-        'status',
-        'completed_at'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'start_time' => 'datetime',

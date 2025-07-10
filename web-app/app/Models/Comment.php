@@ -9,9 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Comment extends Model {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'content', 'parent_id'
-    ];
+    protected $guarded = [];
 
     public function commentable() {
         return $this->morphTo();

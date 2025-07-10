@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProjectTeamMember extends Model {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
-    protected $fillable = [
-        'project_id',
-        'assigned_to_id',
-        'role'
+    protected $guarded = [];
+
+    static $roles = [
+        'Member', 'Manager', 'Viewer'
     ];
 
     public function project() {

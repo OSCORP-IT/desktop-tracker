@@ -145,7 +145,7 @@
                                 <a class="nav-link dropdown-toggle nav-user arrow-none me-0" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                                     <span class="account-user-avatar"> 
                                         @if (Auth::user()->profile_image)
-                                            <img src="{{ url('images/clients', Auth::user()->profile_image) }}" alt="{{ Auth::user()->full_name ?? "" }}" class="rounded-circle">
+                                            <img src="{{ url('images/users', Auth::user()->profile_image) }}" alt="{{ Auth::user()->full_name ?? "" }}" class="rounded-circle">
                                         @else
                                             <img src="{{ asset('hyper/images/avator.png') }}" alt="user-image" class="rounded-circle">
                                         @endif

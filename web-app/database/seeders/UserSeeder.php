@@ -16,7 +16,7 @@ class UserSeeder extends Seeder {
      */
     public function run() {
         $user = User::create([
-            'employee_id' => "EM_001",
+            'employee_id' => "EMP_001",
             'name' => "Administrator",
             'gender' => "Male",
             'date_of_birth' => "2000-01-01",

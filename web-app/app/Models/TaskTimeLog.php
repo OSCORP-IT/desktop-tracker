@@ -9,12 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class TaskTimeLog extends Model {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'task_id',
-        'start_time',
-        'end_time',
-        'note'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'start_time' => 'datetime',

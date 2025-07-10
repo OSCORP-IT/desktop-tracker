@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->id();
             $table->string('employee_id');
             $table->string('name');
-            $table->enum('gender', ["Male", "Female", "Others"]);
-            $table->date('date_of_birth');
+            $table->enum('gender', ["Male", "Female", "Others"])->default('Male');
+            $table->date('date_of_birth')->nullable();
             $table->string('mobile_number');
             $table->string('email');
             $table->string('password');
