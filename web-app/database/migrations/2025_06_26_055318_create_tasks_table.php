@@ -13,12 +13,13 @@ return new class extends Migration {
     public function up() {
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
+            $table->string('reference')->unique()->index();
             $table->foreignId('project_id')->references('id')->on('projects')->onDelete('cascade');
             $table->foreignId('assigned_from_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreignId('assigned_to_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('title');
-            $table->timestamp('start_time')->change();
-            $table->timestamp('due_time')->change();
+            $table->timestamp('start_time')->nullable();
+            $table->timestamp('due_time')->nullable();
             $table->text('description')->nullable();
             $table->json('sub_tasks')->nullable();
             $table->enum('priority', ["Low", "Medium", "High", "Critical"])->default("Medium");

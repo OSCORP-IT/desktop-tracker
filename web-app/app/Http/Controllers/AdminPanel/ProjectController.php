@@ -294,38 +294,38 @@ class ProjectController extends Controller
     public function destroy(Project $project) {
         DB::beginTransaction();
 
-    try {
-        // Delete thumbnail image if exists
-        if ($project->thumbnail_image && file_exists(public_path($project->thumbnail_image))) {
-            unlink(public_path($project->thumbnail_image));
-        }
-
-        // Delete attachments and their files
-        foreach ($project->attachments as $attachment) {
-            if (file_exists(public_path($attachment->file_path))) {
-                unlink(public_path($attachment->file_path));
+        try {
+            // Delete thumbnail image if exists
+            if ($project->thumbnail_image && file_exists(public_path($project->thumbnail_image))) {
+                unlink(public_path($project->thumbnail_image));
             }
-            $attachment->delete();
+
+            // Delete attachments and their files
+            foreach ($project->attachments as $attachment) {
+                if (file_exists(public_path($attachment->file_path))) {
+                    unlink(public_path($attachment->file_path));
+                }
+                $attachment->delete();
+            }
+
+            // Delete related records
+            $project->project_team_members()->delete();
+            $project->tasks()->delete();
+            $project->comments()->delete();
+
+            // Finally delete the project
+            $project->delete();
+
+            DB::commit();
+
+            return redirect()->to('admin-panel/projects')
+                ->with('success', 'Deleted Successfully.');
+        } 
+        catch (\Exception $e) {
+            DB::rollBack();
+
+            return back()
+                ->with('error', 'An error occurred while deleting the record. ' . $e->getMessage());
         }
-
-        // Delete related records
-        $project->project_team_members()->delete();
-        $project->tasks()->delete();
-        $project->comments()->delete();
-
-        // Finally delete the project
-        $project->delete();
-
-        DB::commit();
-
-        return redirect()->to('admin-panel/projects')
-            ->with('success', 'Deleted Successfully.');
-    } 
-    catch (\Exception $e) {
-        DB::rollBack();
-
-        return back()
-            ->with('error', 'An error occurred while deleting the record. ' . $e->getMessage());
-    }
     }
 }
