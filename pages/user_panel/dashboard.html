@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracking App - Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .time-section {
+            text-align: center;
+        }
+
+        .current-time {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 0.5rem;
+        }
+
+        .current-date {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .attendance-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .status-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .status-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .status-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 4px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+        }
+
+        .message.success {
+            background: #28a745;
+        }
+
+        .message.error {
+            background: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .attendance-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .current-time {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 0 0.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Tracking App</h1>
+        <div class="user-info">
+            <span id="userName">Loading...</span>
+            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="time-section">
+            <div class="current-time" id="currentTime">--:--:--</div>
+            <div class="current-date" id="currentDate">Loading...</div>
+        </div>
+    
+        <div class="attendance-controls">
+            <button class="btn btn-success" id="checkInBtn" onclick="handleCheckIn()">Check In</button>
+            <button class="btn btn-danger" id="checkOutBtn" onclick="handleCheckOut()" disabled>Check Out</button>
+            <button class="btn btn-warning" id="breakBtn" onclick="handleBreak()" disabled>Break</button>
+        </div>
+    
+        <div class="status-grid">
+            <div class="status-item">
+                <div class="status-label">Check In Time</div>
+                <div class="status-value" id="checkInTime">--:--</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Active Time</div>
+                <div class="status-value" id="activeTime">00:00:00</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Break Time</div>
+                <div class="status-value" id="breakTime">00:00:00</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Status</div>
+                <div class="status-value" id="currentStatus">Not Checked In</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="./../../public/js/axios.min.js"></script>
+
+    <script>
+        let attendanceState = {
+            attendanceId: null,
+            isCheckedIn: false,
+            checkInTime: null,
+            activeStartTime: null,
+            totalActiveTime: 0,
+            totalBreakTime: 0,
+            isOnBreak: false,
+            breakStartTime: null,
+            serverTimeOffset: 0
+        };
+
+        function formatTime(seconds) {
+            const hrs = Math.floor(seconds / 3600);
+            const mins = Math.floor((seconds % 3600) / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${hrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function formatDateTime(timestamp) {
+            if (!timestamp) return '--:--';
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function updateLiveTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function updateUI() {
+            const now = Date.now();
+            let activeTime = attendanceState.totalActiveTime;
+            let breakTime = attendanceState.totalBreakTime;
+
+            const adjustedNow = now + (attendanceState.serverTimeOffset + 1000);
+
+            if (attendanceState.isCheckedIn) {
+                if (attendanceState.isOnBreak && attendanceState.breakStartTime) {
+                    breakTime = attendanceState.totalBreakTime + (adjustedNow - attendanceState.breakStartTime);
+                } 
+                else if (attendanceState.activeStartTime) {
+                    activeTime = attendanceState.totalActiveTime + (adjustedNow - attendanceState.activeStartTime);
+                }
+            }
+
+            document.getElementById('checkInTime').textContent = attendanceState.checkInTime ? formatDateTime(attendanceState.checkInTime) : '--:--';
+            document.getElementById('activeTime').textContent = formatTime(Math.floor(activeTime / 1000));
+            document.getElementById('breakTime').textContent = formatTime(Math.floor(breakTime / 1000));
+            document.getElementById('currentStatus').textContent = attendanceState.isCheckedIn 
+                ? (attendanceState.isOnBreak ? 'On Break' : 'Active') 
+                : 'Not Checked In';
+
+            document.getElementById('checkInBtn').disabled = attendanceState.isCheckedIn;
+            document.getElementById('checkOutBtn').disabled = !attendanceState.isCheckedIn;
+            document.getElementById('breakBtn').disabled = !attendanceState.isCheckedIn;
+            document.getElementById('breakBtn').textContent = attendanceState.isOnBreak ? 'End Break' : 'Break';
+        }
+
+        function showMessage(msg, type = 'info') {
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.textContent = msg;
+            document.body.appendChild(message);
+            setTimeout(() => message.remove(), 3000);
+        }
+
+        function updateAttendanceState(newState) {
+            attendanceState = { ...attendanceState, ...newState };
+            window.electronAPI.updateAttendanceState(attendanceState); // Send update to main process
+            updateUI();
+        }
+
+        async function fetchInitialData() {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/user-panel/dashboard', {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+                });
+
+                if (response.data.success) {
+                    const { user, attendance_id, is_checked_in, check_in_time, active_start_time, total_active_time, total_break_time, is_on_break, break_start_time, server_time } = response.data.result;
+
+                    document.getElementById('userName').textContent = user.name || 'User';
+
+                    const serverTimeMs = server_time ? new Date(server_time).getTime() : Date.now();
+                    const clientTime = Date.now();
+                    const serverTimeOffset = serverTimeMs - clientTime;
+
+                    let totalBreakTime = total_break_time * 1000;
+                    let breakStartTime = break_start_time ? new Date(break_start_time).getTime() : null;
+
+                    if (is_on_break && break_start_time) {
+                        const serverNow = clientTime + serverTimeOffset;
+                        const ongoingBreakDuration = serverNow - new Date(break_start_time).getTime();
+                        totalBreakTime = (total_break_time * 1000) - ongoingBreakDuration;
+                    }
+
+                    const newState = {
+                        attendanceId: attendance_id,
+                        isCheckedIn: is_checked_in,
+                        checkInTime: check_in_time ? new Date(check_in_time).getTime() : null,
+                        activeStartTime: active_start_time ? new Date(active_start_time).getTime() : null,
+                        totalActiveTime: total_active_time * 1000,
+                        totalBreakTime: totalBreakTime,
+                        isOnBreak: is_on_break,
+                        breakStartTime: breakStartTime,
+                        serverTimeOffset: serverTimeOffset
+                    };
+
+                    updateAttendanceState(newState);
+                } 
+                else {
+                    showMessage('Failed to fetch initial data.', 'error');
+                }
+            } 
+            catch (error) {
+                console.error('Fetch initial data error:', error);
+                showMessage('Failed to fetch initial data. Please try again.', 'error');
+            }
+        }
+
+        async function handleCheckIn() {
+            try {
+                const response = await axios.post('http://127.0.0.1:8000/api/user-panel/check-in', {
+                    'working_from': null,
+                    'location': '1',
+                    'work_from_type': 'home',
+                    'currentLatitude': null,
+                    'currentLongitude': null,
+                }, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+                });
+
+                if (response.data.status === "success") {
+                    const now = Date.now();
+                    const newState = {
+                        attendanceId: response.data.attendance_id || null,
+                        isCheckedIn: true,
+                        checkInTime: now,
+                        activeStartTime: now,
+                        totalActiveTime: 0,
+                        totalBreakTime: 0,
+                        isOnBreak: false,
+                        breakStartTime: null
+                    };
+
+                    updateAttendanceState(newState);
+                    showMessage('Checked in successfully!', 'success');
+                } 
+                else {
+                    showMessage(response.data.message || 'Check-in failed.', 'error');
+                }
+            } 
+            catch (error) {
+                console.error('Check-in error:', error);
+                const errorMsg = error.response?.data?.message || 'Failed to check in. Please try again.';
+                showMessage(errorMsg, 'error');
+            }
+        }
+
+        async function handleCheckOut() {
+            try {
+                const response = await axios.post('http://127.0.0.1:8000/api/user-panel/check-out', {
+                    'id': attendanceState.attendanceId,
+                    'currentLatitude': null,
+                    'currentLongitude': null,
+                    'clockOutLocation': '1',
+                    'clockOutWorkFromType': 'home',
+                    'clockOutWorkFrom': null
+                }, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+                });
+
+                if (response.data.status === "success") {
+                    const now = Date.now();
+                    let newState = { ...attendanceState };
+
+                    if (attendanceState.isOnBreak && attendanceState.breakStartTime) {
+                        newState.totalBreakTime += now - attendanceState.breakStartTime;
+                    } 
+                    else if (attendanceState.activeStartTime) {
+                        newState.totalActiveTime += now - attendanceState.activeStartTime;
+                    }
+
+                    newState = {
+                        ...newState,
+                        isCheckedIn: false,
+                        attendanceId: null,
+                        activeStartTime: null,
+                        breakStartTime: null,
+                        isOnBreak: false
+                    };
+
+                    updateAttendanceState(newState);
+                    showMessage('Checked out successfully!', 'success');
+                } 
+                else {
+                    showMessage(response.data.message || 'Check-out failed.', 'error');
+                }
+            } 
+            catch (error) {
+                console.error('Check-out error:', error);
+                const errorMsg = error.response?.data?.message || 'Failed to check out. Please try again.';
+                showMessage(errorMsg, 'error');
+            }
+        }
+
+        async function handleBreak() {
+            if (!attendanceState.isCheckedIn || !attendanceState.attendanceId) {
+                showMessage('You must be checked in to take a break.', 'error');
+                return;
+            }
+
+            try {
+                const endpoint = attendanceState.isOnBreak
+                    ? `http://127.0.0.1:8000/api/user-panel/end-break/${attendanceState.attendanceId}`
+                    : `http://127.0.0.1:8000/api/user-panel/start-break/${attendanceState.attendanceId}`;
+                
+                const response = await axios.post(endpoint, {}, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+                });
+
+                if (response.data.success) {
+                    const now = Date.now();
+                    let newState = { ...attendanceState };
+
+                    if (attendanceState.isOnBreak) {
+                        newState.totalBreakTime += now - attendanceState.breakStartTime;
+                        newState.activeStartTime = now;
+                        newState.breakStartTime = null;
+                        newState.isOnBreak = false;
+
+                        updateAttendanceState(newState);
+                        showMessage('Break ended successfully!', 'success');
+                    } 
+                    else {
+                        if (attendanceState.activeStartTime) {
+                            newState.totalActiveTime += now - attendanceState.activeStartTime;
+                        }
+
+                        newState.breakStartTime = now;
+                        newState.activeStartTime = null;
+                        newState.isOnBreak = true;
+
+                        updateAttendanceState(newState);
+                        showMessage('Break started successfully!', 'success');
+                    }
+                } 
+                else {
+                    showMessage(response.data.message || 'Failed to update break status.', 'error');
+                }
+            } 
+            catch (error) {
+                console.error('Break error:', error);
+                const errorMsg = error.response?.data?.message || 'Failed to update break status. Please try again.';
+                showMessage(errorMsg, 'error');
+            }
+        }
+
+        async function handleLogout() {
+            try {
+                if (attendanceState.attendanceId && attendanceState.isCheckedIn && !attendanceState.isOnBreak) {
+                    await handleBreak();
+                }
+                
+                const response = await axios.post('http://127.0.0.1:8000/api/user-panel/my-account/logout', {}, {
+                    headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+                });
+
+                if (response.data.success) {
+                    localStorage.removeItem('auth_token');
+                    showMessage('Logged out successfully!', 'success');
+
+                    setTimeout(() => {
+                        window.location.href = './../../pages/authentication/login.html';
+                    }, 1000);
+                } 
+                else {
+                    showMessage('Logout failed.', 'error');
+                }
+            } 
+            catch (error) {
+                console.error('Logout error:', error);
+                showMessage('Logout failed. Please try again.', 'error');
+            }
+        }
+
+        function init() {
+            if (!localStorage.getItem('auth_token')) {
+                window.location.href = './../../pages/authentication/login.html';
+                return;
+            }
+
+            window.electronAPI.sendAuthToken(localStorage.getItem('auth_token'));
+
+            // Request initial attendanceState from main process
+            window.electronAPI.requestAttendanceState();
+            window.electronAPI.onUpdateAttendanceState((state) => {
+                attendanceState = { ...attendanceState, ...state };
+                updateUI();
+            });
+
+            fetchInitialData();
+            updateLiveTime();
+            setInterval(updateLiveTime, 1000);
+            setInterval(updateUI, 1000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
