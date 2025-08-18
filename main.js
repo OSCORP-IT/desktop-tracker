@@ -214,7 +214,7 @@ function startActivityUploader() {
             while (retryCount < maxRetries) {
                 try {
                     const response = await axios.post(
-                        'https://worksuite.abidurrahman.com/api/user-panel/application-activity-upload',
+                        'http://127.0.0.1:8000/api/user-panel/application-activity-upload',
                         { application_activities: activities },
                         {
                             headers: {
@@ -369,7 +369,7 @@ function startScreenshotUploader() {
                     form.append('screenshot_image', fs.createReadStream(filePath));
 
                     const response = await axios.post(
-                        `https://worksuite.abidurrahman.com/api/user-panel/screenshot-upload/${parsedAttendanceId}`,
+                        `http://127.0.0.1:8000/api/user-panel/screenshot-upload/${parsedAttendanceId}`,
                         form,
                         {
                             headers: {
