@@ -4,357 +4,440 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tasks - Tracking App</title>
+    <title>Tasks – Modern Tracker with Subtasks</title>
     <style>
-        /* ---------- Global ---------- */
+        :root {
+            --bg: #0b1220;
+            --card: #0f172a;
+            --muted: #94a3b8;
+            --primary: #6366f1;
+            --primary-2: #22c55e;
+            --surface: #0b1220;
+            --ring: rgba(99, 102, 241, .35);
+        }
+
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%
         }
 
         body {
-            background: #f0f2f5;
-            color: #333;
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+            color: #e5e7eb;
+            background: radial-gradient(1200px 600px at 20% -10%, rgba(99, 102, 241, .25), transparent 60%),
+                radial-gradient(900px 500px at 90% -10%, rgba(34, 197, 94, .18), transparent 60%),
+                linear-gradient(180deg, #0b1220 0%, #0b1220 100%);
         }
 
+        /* Header */
         .header {
-            background: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            backdrop-filter: saturate(140%) blur(8px);
+            background: linear-gradient(90deg, rgba(15, 23, 42, .85), rgba(12, 18, 32, .85));
+            border-bottom: 1px solid rgba(148, 163, 184, .12);
+        }
+
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 1.25rem;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            border-radius: 8px;
+            gap: 1rem;
         }
 
-        .header h1 {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .user-info {
+        .brand {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: .65rem;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+        .logo {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), #22d3ee);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, .15)
+        }
+
+        .brand span {
+            font-size: 1.05rem
+        }
+
+        .user-box {
+            display: flex;
+            align-items: center;
+            gap: .75rem
         }
 
         .logout-btn {
-            background: #e74c3c;
-            color: white;
+            background: #ef4444;
             border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
+            color: white;
+            font-weight: 600;
             cursor: pointer;
-            transition: 0.2s;
+            padding: .5rem .9rem;
+            border-radius: 10px;
+            transition: .18s ease;
+            box-shadow: 0 6px 20px rgba(239, 68, 68, .2);
         }
 
         .logout-btn:hover {
-            background: #c0392b;
+            background: #dc2626
         }
 
+        /* Container & Controls */
         .container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 18px;
         }
 
-        /* ---------- Filter ---------- */
-        .task-controls {
+        .controls {
             display: flex;
-            justify-content: space-between;
+            gap: 12px;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .task-controls input,
-        .task-controls select {
-            padding: 0.5rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .task-controls input:focus,
-        .task-controls select:focus {
-            border-color: #007bff;
-        }
-
-        /* ---------- Table ---------- */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        th,
-        td {
-            padding: 0.8rem 1rem;
-            text-align: left;
-            vertical-align: top;
-        }
-
-        th {
-            background: #f8f9fa;
-            font-weight: 600;
-        }
-
-        tr {
-            border-bottom: 1px solid #eee;
-        }
-
-        tr:hover {
-            background: #f1f6ff;
-        }
-
-        /* Buttons */
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: 0.2s;
-        }
-
-        .btn-primary {
-            background: #3498db;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #2980b9;
-        }
-
-        .btn-details {
-            background: #2ecc71;
-            color: white;
-        }
-
-        .btn-details:hover {
-            background: #27ae60;
-        }
-
-        /* ---------- Modern Modal ---------- */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content {
-            background-color: #fff;
-            margin: 3% auto;
-            padding: 2rem;
-            border-radius: 10px;
-            width: 600px;
-            /* Medium/Large modal */
-            max-width: 90%;
-            position: relative;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .large-modal {
-            width: 700px;
-            /* Make modal wider */
-        }
-
-        .modal-content h2 {
-            margin-bottom: 1rem;
-            font-size: 1.6rem;
-        }
-
-        .modal-content label {
-            display: block;
-            margin-top: 0.8rem;
-            font-weight: 500;
-        }
-
-        .modal-content input,
-        .modal-content select,
-        .modal-content textarea {
-            width: 100%;
-            padding: 0.5rem;
-            margin-top: 0.2rem;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        .btn-submit {
-            margin-top: 1.2rem;
-            width: 100%;
-            padding: 0.8rem;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-submit:hover {
-            background-color: #2980b9;
-        }
-
-        .close {
-            position: absolute;
-            top: 0.5rem;
-            right: 1rem;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-
-        .details-row {
-            margin-bottom: 0.6rem;
-            font-size: 1rem;
-        }
-
-        .details-row strong {
-            width: 140px;
-            display: inline-block;
-            color: #333;
-        }
-
-        .modal-actions {
-            margin-top: 1.5rem;
-            display: flex;
-            justify-content: flex-start;
-            gap: 0.75rem;
+            justify-content: space-between;
+            margin-bottom: 18px;
             flex-wrap: wrap;
         }
 
-        /* Distinct action buttons (avoid class name conflicts) */
-        .btn-action {
-            padding: 0.6rem 1rem;
-            border: none;
-            border-radius: 8px;
+        .left-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap
+        }
+
+        .button {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
             color: white;
-            font-weight: 600;
+            border: 0;
             cursor: pointer;
-            transition: background 0.2s ease;
+            font-weight: 700;
+            padding: .7rem 1rem;
+            border-radius: 12px;
+            transition: .18s ease;
+            box-shadow: 0 10px 28px rgba(99, 102, 241, .3);
         }
 
-        .btn-action-start {
-            background-color: #28a745;
+        .button:hover {
+            filter: brightness(1.05)
         }
 
-        .btn-action-start:hover {
-            background-color: #218838;
+        .select,
+        .input {
+            background: #0b1220;
+            color: #e5e7eb;
+            border: 1px solid rgba(148, 163, 184, .25);
+            border-radius: 12px;
+            padding: .65rem .8rem;
+            outline: none;
+            transition: border .12s ease, box-shadow .12s ease;
         }
 
-        .btn-action-pause {
-            background-color: #ffc107;
-            color: #212529;
+        .select:focus,
+        .input:focus {
+            border-color: var(--ring);
+            box-shadow: 0 0 0 3px var(--ring);
         }
 
-        .btn-action-pause:hover {
-            background-color: #e0a800;
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, minmax(0, 1fr));
+            gap: 16px;
         }
 
-        .btn-action-resume {
-            background-color: #079cff;
+        .col-12 {
+            grid-column: span 12 / span 12;
         }
 
-        .btn-action-resume:hover {
-            background-color: #0689e0;
+        .col-6 {
+            grid-column: span 6 / span 6;
         }
 
-        .btn-action-end {
-            background-color: #dc3545;
+        .col-4 {
+            grid-column: span 4 / span 4;
         }
 
-        .btn-action-end:hover {
-            background-color: #c82333;
+        @media (max-width: 1000px) {
+            .col-4 {
+                grid-column: span 6 / span 6
+            }
         }
 
-        .status-not-started {
-            color: #6c757d;
-            /* Gray for not_started */
+        @media (max-width: 680px) {
+
+            .col-6,
+            .col-4 {
+                grid-column: span 12 / span 12
+            }
         }
 
-        .status-running {
-            color: #28a745;
-            /* Green for running */
+        /* Card */
+        .card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .01));
+            border: 1px solid rgba(148, 163, 184, .12);
+            border-radius: 16px;
+            padding: 16px;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(2, 6, 23, .45), inset 0 1px 0 rgba(255, 255, 255, .06);
         }
 
-        .status-paused {
-            color: #b88700;
-            /* darker yellow for better contrast */
+        .card:hover {
+            border-color: rgba(148, 163, 184, .22)
         }
 
-        .status-ended {
-            color: #dc3545;
-            /* Red for ended */
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
-        .status-unknown {
-            color: #6c757d;
-            /* Fallback gray for unknown status */
+        .title {
+            font-weight: 700;
+            letter-spacing: .2px
         }
 
-        .message {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.25rem;
+        .meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            color: var(--muted);
+            font-size: .85rem
+        }
+
+        .badge {
+            border: 1px solid rgba(148, 163, 184, .25);
+            color: #c7d2fe;
+            background: rgba(99, 102, 241, .12);
+            padding: .18rem .5rem;
+            border-radius: 999px;
+            font-size: .75rem;
+            font-weight: 700
+        }
+
+        .code {
+            color: #a5b4fc;
+            background: rgba(79, 70, 229, .08);
+            border: 1px dashed rgba(79, 70, 229, .35);
+            padding: .18rem .5rem;
             border-radius: 8px;
+            font-size: .75rem
+        }
+
+        /* Progress */
+        .progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: .25rem 0 .5rem
+        }
+
+        .bar {
+            height: 8px;
+            width: 36%;
+            min-width: 140px;
+            max-width: 200px;
+            background: rgba(148, 163, 184, .18);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .bar>span {
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-2));
+            transition: width .25s ease
+        }
+
+        .pct {
+            font-size: .85rem;
+            color: #cbd5e1;
+            min-width: 40px
+        }
+
+        /* Subtasks */
+        .subs {
+            margin-top: 8px;
+            border-top: 1px dashed rgba(148, 163, 184, .18);
+            padding-top: 10px
+        }
+
+        .sub {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border-radius: 10px;
+        }
+
+        .sub:hover {
+            background: rgba(79, 70, 229, .06)
+        }
+
+        .sub input {
+            width: 18px;
+            height: 18px
+        }
+
+        .sub .t {
+            flex: 1
+        }
+
+        .done {
+            text-decoration: line-through;
+            color: #94a3b8
+        }
+
+        .sub-del {
+            background: transparent;
+            border: 0;
+            color: #94a3b8;
+            cursor: pointer;
+            border-radius: 8px;
+            padding: 4px
+        }
+
+        .sub-del:hover {
+            color: #fca5a5
+        }
+
+        .addrow {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px
+        }
+
+        .addrow input {
+            flex: 1
+        }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap
+        }
+
+        .act {
+            border: 0;
+            cursor: pointer;
             color: white;
-            font-weight: 600;
-            z-index: 1100;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            font-weight: 700;
+            border-radius: 999px;
+            padding: .5rem .8rem
         }
 
-        .message.success {
-            background: #28a745;
+        .a-start {
+            background: #16a34a
         }
 
-        .message.error {
-            background: #dc3545;
+        .a-pause {
+            background: #f59e0b
+        }
+
+        .a-resume {
+            background: #3490ff
+        }
+
+        .a-end {
+            background: #ef4444
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, .7);
+            z-index: 50
+        }
+
+        .modal-card {
+            width: min(760px, 92%);
+            margin: 5vh auto;
+            background: #0b1220;
+            border: 1px solid rgba(148, 163, 184, .2);
+            border-radius: 16px;
+            box-shadow: 0 40px 80px rgba(2, 6, 23, .6)
+        }
+
+        .modal-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(148, 163, 184, .12)
+        }
+
+        .close {
+            background: transparent;
+            border: 0;
+            color: #e5e7eb;
+            font-size: 22px;
+            cursor: pointer
+        }
+
+        .modal-body {
+            padding: 16px 18px
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            background: #10b981;
+            color: white;
+            padding: .75rem 1rem;
+            border-radius: 10px;
+            box-shadow: 0 18px 40px rgba(16, 185, 129, .25);
+            display: none;
+            z-index: 60
+        }
+
+        .toast.error {
+            background: #ef4444
         }
     </style>
 </head>
 
 <body>
     <div class="header">
-        <h1 style="font-size: 1.5rem; font-weight: 600; color: #333">
-            <a href="./dashboard.html"
-                style="text-decoration: none; color: #3469db; font-weight: 600; margin-right: 0.3rem">Dashboard</a>
-            <span style="color: #555; font-weight: 400">- Task List</span>
-        </h1>
-
-        <div class="user-info">
-            <span id="userName" style="color: #333; font-weight: 600">Anonymous User</span>
-            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+        <div class="header-inner">
+            <div class="brand">
+                <div class="logo"></div>
+                <span>TaskFlow</span>
+            </div>
+            <div class="user-box">
+                <span id="userName" style="color:#e2e8f0; font-weight:700">Anonymous User</span>
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
         </div>
     </div>
 
     <div class="container">
-        <div class="task-controls">
-            <button class="btn btn-primary" onclick="openNewTaskModal()">+ New Task</button>
-
-            <div style="display: flex; gap: 0.5rem">
-                <select id="statusFilter" onchange="filterTasks()">
+        <div class="controls">
+            <div class="left-controls">
+                <button class="button" onclick="openNewTaskModal()">+ New Task</button>
+                <select class="select" id="statusFilter" onchange="applyFilters()">
                     <option value="">All Status</option>
                     <option value="1" selected>Incomplete</option>
                     <option value="2">To Do</option>
@@ -362,528 +445,428 @@
                     <option value="4">Completed</option>
                     <option value="5">Waiting Approval</option>
                 </select>
-
-                <input type="text" id="taskFilter" placeholder="Search task name..." onkeyup="filterTasks()" />
             </div>
+            <input id="searchBox" class="input" placeholder="Search tasks... (min 3 chars)"
+                oninput="debouncedSearch()" />
         </div>
 
-        <table id="taskTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Code</th>
-                    <th>Task</th>
-                    <th>Start Date</th>
-                    <th>Due Date</th>
-                    <th>Working Time</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+        <div id="grid" class="grid"></div>
     </div>
 
     <!-- Create Task Modal -->
-    <div id="newTaskModal" class="modal">
-        <div class="modal-content large-modal">
-            <span class="close" onclick="closeNewTaskModal()">&times;</span>
-            <h2>Create New Task</h2>
-            <form id="newTaskForm">
-                <div class="form-group">
-                    <label for="taskTitle">Title</label>
-                    <input type="text" id="taskTitle" required />
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="taskProject">Project</label>
-                        <select id="taskProject">
+    <div id="newTaskModal" class="modal" role="dialog" aria-modal="true">
+        <div class="modal-card">
+            <div class="modal-head">
+                <strong>Create New Task</strong>
+                <button class="close" onclick="closeNewTaskModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="display:grid; gap:12px; grid-template-columns: repeat(12, minmax(0,1fr));">
+                    <div class="col-12">
+                        <label>Title</label>
+                        <input id="taskTitle" class="input" placeholder="Task title" />
+                    </div>
+                    <div class="col-6">
+                        <label>Project</label>
+                        <select id="taskProject" class="select">
                             <option value="">Select Project</option>
                         </select>
                     </div>
-
-                    <div class="form-group">
-                        <label for="taskPriority">Priority</label>
-                        <select id="taskPriority" required>
+                    <div class="col-6">
+                        <label>Priority</label>
+                        <select id="taskPriority" class="select">
                             <option value="">Select Priority</option>
                         </select>
                     </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="taskStart">Start Date</label>
-                        <input type="date" id="taskStart" required />
+                    <div class="col-6">
+                        <label>Start Date</label>
+                        <input id="taskStart" class="input" type="date" />
                     </div>
-
-                    <div class="form-group">
-                        <label for="taskEnd">End Date</label>
-                        <input type="date" id="taskEnd" required />
+                    <div class="col-6">
+                        <label>End Date</label>
+                        <input id="taskEnd" class="input" type="date" />
+                    </div>
+                    <div class="col-12">
+                        <label>Description</label>
+                        <textarea id="taskDescription" class="input" rows="4"
+                            placeholder="Write a few lines..."></textarea>
+                    </div>
+                    <div class="col-12" style="display:flex; justify-content:flex-end; gap:10px">
+                        <button class="button" onclick="createTask()">Create Task</button>
+                        <button class="button" style="background:#334155" onclick="closeNewTaskModal()">Close</button>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="taskDescription">Description</label>
-                    <textarea id="taskDescription" rows="4"></textarea>
-                </div>
-
-                <button type="submit" class="btn-submit">Create Task</button>
-            </form>
+            </div>
         </div>
     </div>
 
     <!-- Details Modal -->
-    <div id="taskDetailModal" class="modal">
-        <div class="modal-content large-modal">
-            <span class="close" onclick="closeTaskDetailModal()">&times;</span>
-            <h2>Task Details</h2>
+    <div id="taskDetailModal" class="modal" role="dialog" aria-modal="true">
+        <div class="modal-card">
+            <div class="modal-head">
+                <strong>Task Details</strong>
+                <button class="close" onclick="closeTaskDetailModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="detailsBlock"
+                    style="display:grid; gap:10px; grid-template-columns: repeat(12, minmax(0,1fr)); margin-bottom: 8px">
+                    <div class="col-6">
+                        <div class="meta"><span>Code:</span> <strong id="d_code"></strong></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="meta"><span>Priority:</span> <span id="d_priority" class="badge"></span></div>
+                    </div>
+                    <div class="col-12">
+                        <div class="meta"><span>Title:</span> <strong id="d_title"></strong></div>
+                    </div>
+                    <div class="col-12">
+                        <div class="meta"><span>Description:</span> <span id="d_desc"></span></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="meta"><span>Project:</span> <span id="d_project"></span></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="meta"><span>Status:</span> <span id="d_status"></span></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="meta"><span>Start:</span> <span id="d_start"></span></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="meta"><span>Due:</span> <span id="d_end"></span></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="meta"><span>Estimate:</span> <span id="d_est"></span></div>
+                    </div>
+                    <div class="col-6">
+                        <div class="meta"><span>Completed:</span> <span id="d_completed"></span></div>
+                    </div>
+                    <div class="col-12">
+                        <div class="meta"><span>Working Time:</span> <span id="d_working"></span></div>
+                    </div>
+                </div>
 
-            <div class="details-row"><strong>Code:</strong> <span id="task_details_modalCode"></span></div>
-            <div class="details-row"><strong>Title:</strong> <span id="task_details_modalName"></span></div>
-            <div class="details-row"><strong>Description:</strong> <span id="task_details_modalDescription"></span>
-            </div>
-            <div class="details-row"><strong>Project:</strong> <span id="task_details_modalProject"></span></div>
-            <div class="details-row"><strong>Start Date:</strong> <span id="task_details_modalStart"></span></div>
-            <div class="details-row"><strong>Due Date:</strong> <span id="task_details_modalEnd"></span></div>
-            <div class="details-row"><strong>Priority:</strong> <span id="task_details_modalPriority"></span></div>
-            <div class="details-row"><strong>Status:</strong> <span id="task_details_modalStatus"></span></div>
-            <div class="details-row"><strong>Estimated Time:</strong> <span id="task_details_modalEstimate"></span>
-            </div>
-            <div class="details-row"><strong>Completed On:</strong> <span id="task_details_modalCompleted"></span></div>
-            <div class="details-row"><strong>Working Time:</strong> <span id="task_details_modalWorkingTime"></span>
-            </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin: 8px 0">
+                    <strong>Subtasks</strong>
+                    <div class="progress">
+                        <div class="bar"><span id="modalBar"></span></div>
+                        <div class="pct" id="modalPct">0%</div>
+                    </div>
+                </div>
+                <div id="modalSubs" class="subs"></div>
+                <div class="addrow">
+                    <input id="new_subtask_title" class="input" placeholder="Add a subtask..." />
+                    <button class="button" onclick="addSubtaskModal()">Add</button>
+                </div>
 
-            <div class="modal-actions">
-                <button class="btn-action btn-action-start" id="start_button">Start</button>
-                <button class="btn-action btn-action-pause" id="pause_button">Pause</button>
-                <button class="btn-action btn-action-resume" id="resume_button">Resume</button>
-                <button class="btn-action btn-action-end" id="end_button">End</button>
+                <div class="actions">
+                    <button id="start_button" class="act a-start">Start</button>
+                    <button id="pause_button" class="act a-pause">Pause</button>
+                    <button id="resume_button" class="act a-resume">Resume</button>
+                    <button id="end_button" class="act a-end">End</button>
+                </div>
             </div>
         </div>
     </div>
 
+    <div id="toast" class="toast">Saved</div>
+
+    <!-- Axios + SweetAlert (fallback friendly) -->
     <script src="./../../public/js/axios.min.js"></script>
+    <script> if (typeof axios === 'undefined') { document.write('<script src="https://cdn.jsdelivr.net/npm/axios@1.7.4/dist/axios.min.js"><\/script>'); } </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        // ===== State =====
         let tasks = [];
-        const tableBody = document.querySelector("#taskTable tbody");
+        const subtasksByTaskId = {}; // { [taskId]: [{id,title,done}] }
+        let currentDetailsTaskId = null;
+        let searchTimer = null;
 
-        // ---- Utils ----
-        function showMessage(msg, type = "info") {
-            const message = document.createElement("div");
-            message.className = `message ${type}`;
-            message.textContent = msg;
-            document.body.appendChild(message);
-            setTimeout(() => message.remove(), 3000);
-        }
+        // ===== Utils =====
+        const $ = (sel) => document.querySelector(sel);
+        const $$ = (sel) => document.querySelectorAll(sel);
 
-        function formatDateTimeFull(datetimeStr) {
-            if (!datetimeStr) return "-";
-            const date = new Date(datetimeStr);
-            const day = String(date.getDate()).padStart(2, "0");
-            const month = String(date.getMonth() + 1).padStart(2, "0");
-            const year = date.getFullYear();
-            const hours = String(date.getHours()).padStart(2, "0");
-            const minutes = String(date.getMinutes()).padStart(2, "0");
-            return `${day}-${month}-${year} ${hours}:${minutes}`;
-        }
-
-        function formatDateShort(datetimeStr) {
-            if (!datetimeStr) return "-";
-            const date = new Date(datetimeStr);
-            return date.toLocaleString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-            });
-        }
-
-        function formatDateToDDMMYYYY(dateStr) {
-            if (!dateStr) return null;
-            const date = new Date(dateStr);
-            const day = String(date.getDate()).padStart(2, "0");
-            const month = String(date.getMonth() + 1).padStart(2, "0");
-            const year = date.getFullYear();
-            return `${day}-${month}-${year}`;
+        function toast(msg, type) {
+            const t = $('#toast');
+            if (!t) return;
+            t.classList.toggle('error', type === 'error');
+            t.textContent = msg || 'Done';
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 1500);
         }
 
         function handleLogout() {
-            localStorage.removeItem("auth_token");
-            localStorage.removeItem("user_name");
-            window.location.href = "./../../pages/authentication/login.html";
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_name');
+            location.href = './../../pages/authentication/login.html';
         }
 
-        // ---- Create Task ----
-        async function openNewTaskModal() {
-            try {
-                const response = await axios.get(
-                    "http://127.0.0.1:8000/api/user-panel/tasks/create",
-                    { headers: { Authorization: `Bearer ${localStorage.getItem("auth_token")}` } }
-                );
+        // Date helpers
+        function fmtShort(d) { if (!d) return '-'; const x = new Date(d); return x.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) }
+        function fmtFull(d) { if (!d) return '-'; const x = new Date(d); const dd = String(x.getDate()).padStart(2, '0'); const mm = String(x.getMonth() + 1).padStart(2, '0'); const yy = x.getFullYear(); const hh = String(x.getHours()).padStart(2, '0'); const mi = String(x.getMinutes()).padStart(2, '0'); return `${dd}-${mm}-${yy} ${hh}:${mi}` }
+        function dmy(dateStr) { if (!dateStr) return null; const d = new Date(dateStr); return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}` }
 
-                if (response.data.success) {
-                    const createData = response.data.result;
+        // ===== API =====
+        async function fetchCreateData() {
+            const res = await axios.get('http://127.0.0.1:8000/api/user-panel/tasks/create', { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` } });
+            return res.data;
+        }
+        async function fetchTasks(params) {
+            const res = await axios.get('http://127.0.0.1:8000/api/user-panel/tasks', { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }, params });
+            return res.data;
+        }
+        async function fetchTask(taskId) {
+            const res = await axios.get(`http://127.0.0.1:8000/api/user-panel/tasks/${taskId}/show`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` } });
+            return res.data;
+        }
 
-                    // Populate priorities
-                    const prioritySelect = document.getElementById("taskPriority");
-                    prioritySelect.innerHTML = `<option value="">Select Priority</option>`;
-                    (createData.priorities || []).forEach((p) => {
-                        prioritySelect.innerHTML += `<option value="${p}">${p}</option>`;
-                    });
+        // ===== Subtasks =====
+        function ensureDemoSubtasks(taskId) {
+            if (subtasksByTaskId[taskId]) return;
+            subtasksByTaskId[taskId] = [
+                { id: Date.now() + 1, title: 'Plan & breakdown', done: false },
+                { id: Date.now() + 2, title: 'Implement core logic', done: false },
+                { id: Date.now() + 3, title: 'Review & finalize', done: false },
+            ];
+        }
+        function progress(taskId) {
+            const list = subtasksByTaskId[taskId] || [];
+            if (!list.length) return 0; const done = list.filter(s => s.done).length; return Math.round((done / list.length) * 100);
+        }
 
-                    // Populate projects
-                    const projectSelect = document.getElementById("taskProject");
-                    projectSelect.innerHTML = `<option value="">Select Project</option>`;
-                    (createData.projects || []).forEach((p) => {
-                        const id = p.id ?? p.value ?? "";
-                        const name = p.project_name ?? p.name ?? "Unnamed";
-                        projectSelect.innerHTML += `<option value="${id}">${name}</option>`;
-                    });
+        // Card & Modal subtasks rendering
+        function renderCardSubtasks(taskId, host) {
+            ensureDemoSubtasks(taskId);
+            const list = subtasksByTaskId[taskId];
+            host.innerHTML = '';
+            list.forEach(item => {
+                const row = document.createElement('div'); row.className = 'sub';
+                row.innerHTML = `
+            <input type="checkbox" ${item.done ? 'checked' : ''} />
+            <div class="t ${item.done ? 'done' : ''}">${item.title}</div>
+            <button class="sub-del" title="Delete">✕</button>
+          `;
+                const checkbox = row.querySelector('input');
+                const del = row.querySelector('.sub-del');
+                checkbox.addEventListener('change', (e) => { item.done = !!checkbox.checked; updateAllProgress(taskId); });
+                del.addEventListener('click', () => { removeSubtask(taskId, item.id); updateAllProgress(taskId); });
+                host.appendChild(row);
+            });
+        }
+        function renderModalSubtasks(taskId) {
+            ensureDemoSubtasks(taskId);
+            const list = subtasksByTaskId[taskId];
+            const host = $('#modalSubs'); host.innerHTML = '';
+            list.forEach(item => {
+                const row = document.createElement('div'); row.className = 'sub';
+                row.innerHTML = `
+            <input type="checkbox" ${item.done ? 'checked' : ''} />
+            <div class="t ${item.done ? 'done' : ''}">${item.title}</div>
+            <button class="sub-del" title="Delete">✕</button>
+          `;
+                const checkbox = row.querySelector('input');
+                const del = row.querySelector('.sub-del');
+                checkbox.addEventListener('change', () => { item.done = !!checkbox.checked; updateAllProgress(taskId); renderModalSubtasks(taskId); });
+                del.addEventListener('click', () => { removeSubtask(taskId, item.id); updateAllProgress(taskId); renderModalSubtasks(taskId); });
+                host.appendChild(row);
+            });
+        }
+        function updateAllProgress(taskId) {
+            // Modal
+            const pct = progress(taskId);
+            const bar = $('#modalBar'); const txt = $('#modalPct');
+            if (bar) bar.style.width = pct + '%'; if (txt) txt.textContent = pct + '%';
+            // Card bar
+            const cardBar = document.querySelector(`[data-pbar="${taskId}"]`);
+            const cardPct = document.querySelector(`[data-ppct="${taskId}"]`);
+            if (cardBar) cardBar.style.width = pct + '%'; if (cardPct) cardPct.textContent = pct + '%';
+        }
+        function addSubtaskModal() {
+            const input = $('#new_subtask_title');
+            const title = (input.value || '').trim(); if (!title) return;
+            const list = subtasksByTaskId[currentDetailsTaskId] || (subtasksByTaskId[currentDetailsTaskId] = []);
+            list.push({ id: Date.now(), title, done: false }); input.value = '';
+            renderModalSubtasks(currentDetailsTaskId); updateAllProgress(currentDetailsTaskId); renderCards();
+        }
+        function removeSubtask(taskId, subtaskId) {
+            const list = subtasksByTaskId[taskId] || []; subtasksByTaskId[taskId] = list.filter(x => x.id !== subtaskId);
+            renderCards();
+        }
 
-                    document.getElementById("newTaskModal").style.display = "block";
-
-                    document.getElementById("newTaskForm").onsubmit = async (e) => {
-                        e.preventDefault();
-                        await createTask();
-                    };
-                } else {
-                    showMessage("Failed to fetch create data.", "error");
-                }
-            } catch (error) {
-                console.error(error);
-                showMessage("Failed to fetch create data.", "error");
+        // ===== Cards =====
+        function renderCards() {
+            const grid = $('#grid'); grid.innerHTML = '';
+            if (!tasks.length) {
+                const empty = document.createElement('div'); empty.className = 'col-12';
+                empty.innerHTML = '<div class="card" style="text-align:center; color:#94a3b8">No tasks found.</div>';
+                grid.appendChild(empty); return;
             }
+            tasks.forEach(task => {
+                const col = document.createElement('div'); col.className = 'col-4';
+                const p = progress(task.id);
+                col.innerHTML = `
+            <div class="card">
+              <div class="card-head">
+                <div class="title">${task.heading || 'Untitled'}</div>
+                <div class="badge">${task.priority || 'Normal'}</div>
+              </div>
+              <div class="meta" style="margin-bottom:6px">
+                <span class="code">${task.task_short_code || '-'}</span>
+                <span>•</span>
+                <span>${(task.project && (task.project.name || task.project.project_name)) || 'No Project'}</span>
+              </div>
+              <div class="progress">
+                <div class="bar"><span data-pbar="${task.id}" style="width:${p}%"></span></div>
+                <div class="pct" data-ppct="${task.id}">${p}%</div>
+              </div>
+              <div class="meta" style="margin-bottom:8px">
+                <span>Start: ${fmtShort(task.start_date)}</span>
+                <span>•</span>
+                <span>Due: ${fmtShort(task.due_date)}</span>
+              </div>
+              <div id="subs-${task.id}" class="subs"></div>
+              <div class="addrow">
+                <input id="add-${task.id}" class="input" placeholder="Add subtask..." />
+                <button class="button" style="padding:.55rem .8rem" onclick="addSubtaskInline(${task.id})">Add</button>
+              </div>
+              <div class="actions">
+                <button class="act a-start" onclick="startTask(${task.id})">Start</button>
+                <button class="act a-pause" onclick="pauseTask(${task.id}, ${task.active_timer_id || ''})">Pause</button>
+                <button class="act a-resume" onclick="resumeTask(${task.id}, ${task.active_timer_id || ''}, ${task.active_break_time_id || ''})">Resume</button>
+                <button class="act a-end" onclick="endTask(${task.id}, ${task.active_timer_id || ''})">End</button>
+                <button class="act" style="background:#334155" onclick="showTaskDetails(${task.id})">Details</button>
+              </div>
+            </div>`;
+                grid.appendChild(col);
+                renderCardSubtasks(task.id, col.querySelector(`#subs-${task.id}`));
+            });
+        }
+        function addSubtaskInline(taskId) {
+            const el = document.getElementById(`add-${taskId}`);
+            const title = (el && el.value || '').trim(); if (!title) return;
+            const list = subtasksByTaskId[taskId] || (subtasksByTaskId[taskId] = []);
+            list.push({ id: Date.now(), title, done: false }); el.value = '';
+            updateAllProgress(taskId); renderCards();
         }
 
-        async function createTask() {
-            const payload = {
-                title: document.getElementById("taskTitle").value.trim(),
-                project_id: document.getElementById("taskProject").value || null,
-                start_date: formatDateToDDMMYYYY(
-                    document.getElementById("taskStart").value
-                ),
-                end_date: formatDateToDDMMYYYY(
-                    document.getElementById("taskEnd").value
-                ),
-                priority: document.getElementById("taskPriority").value,
-                description: document.getElementById("taskDescription").value || null,
-            };
-
-            try {
-                const response = await axios.post(
-                    "http://127.0.0.1:8000/api/user-panel/tasks/store",
-                    payload,
-                    { headers: { Authorization: `Bearer ${localStorage.getItem("auth_token")}` } }
-                );
-
-                if (response.data.success) {
-                    closeNewTaskModal();
-                    showMessage("Task created successfully!", "success");
-                    fetchTaskData("", 1);
-                } else {
-                    showMessage(
-                        "Failed to create task: " + (response.data.message || ""),
-                        "error"
-                    );
-                }
-            } catch (error) {
-                console.error(error);
-                showMessage(`Failed to create task. (${error})`, "error");
-            }
-        }
-
-        function closeNewTaskModal() {
-            document.getElementById("newTaskModal").style.display = "none";
-            document.getElementById("newTaskForm").reset();
-        }
-
-        // ---- Details Modal ----
+        // ===== Details Modal =====
         async function showTaskDetails(taskId) {
             try {
-                const response = await axios.get(
-                    `http://127.0.0.1:8000/api/user-panel/tasks/${taskId}/show`,
-                    { headers: { Authorization: `Bearer ${localStorage.getItem("auth_token")}` } }
-                );
+                const data = await fetchTask(taskId);
+                if (!data.success) return toast('Failed to fetch task details', 'error');
+                const task = data.result; currentDetailsTaskId = task.id;
+                $('#d_code').textContent = task.task_short_code || '-';
+                $('#d_title').textContent = task.heading || '-';
+                $('#d_desc').textContent = task.description || '';
+                $('#d_project').textContent = (task.project && (task.project.name || task.project.project_name)) || '-';
+                $('#d_start').textContent = fmtFull(task.start_date);
+                $('#d_end').textContent = task.due_date ? fmtFull(task.due_date) : '-';
+                $('#d_priority').textContent = task.priority || '-';
+                $('#d_status').textContent = task.status || '-';
+                $('#d_est').textContent = `${task.estimate_hours || 0}h ${task.estimate_minutes || 0}m`;
+                $('#d_completed').textContent = task.completed_on ? fmtFull(task.completed_on) : '-';
+                $('#d_working').textContent = task.working_time || '-';
 
-                if (response.data.success) {
-                    const task = response.data.result;
+                // Actions
+                $('#start_button').onclick = () => startTask(task.id);
+                $('#pause_button').onclick = () => pauseTask(task.id, task.active_timer_id);
+                $('#resume_button').onclick = () => resumeTask(task.id, task.active_timer_id, task.active_break_time_id);
+                $('#end_button').onclick = () => endTask(task.id, task.active_timer_id);
 
-                    document.getElementById("task_details_modalCode").textContent =
-                        task.task_short_code || "-";
-                    document.getElementById("task_details_modalName").textContent =
-                        task.heading || "-";
-                    document.getElementById("task_details_modalDescription").textContent =
-                        task.description || "";
-                    document.getElementById("task_details_modalProject").textContent =
-                        (task.project && (task.project.name || task.project.project_name)) ||
-                        "-";
-                    document.getElementById("task_details_modalStart").textContent =
-                        formatDateTimeFull(task.start_date);
-                    document.getElementById("task_details_modalEnd").textContent =
-                        task.due_date ? formatDateTimeFull(task.due_date) : "-";
-                    document.getElementById("task_details_modalPriority").textContent =
-                        task.priority || "-";
-                    document.getElementById("task_details_modalStatus").textContent =
-                        task.status || "-";
-                    document.getElementById("task_details_modalEstimate").textContent = `${task.estimate_hours || 0
-                        }h ${task.estimate_minutes || 0}m`;
-                    document.getElementById("task_details_modalCompleted").textContent =
-                        task.completed_on ? formatDateTimeFull(task.completed_on) : "-";
-                    document.getElementById("task_details_modalWorkingTime").textContent =
-                        task.working_time || "-";
-
-                    // Wire action buttons
-                    document
-                        .getElementById("start_button")
-                        .setAttribute("onclick", `startTask(${task.id})`);
-                    document
-                        .getElementById("pause_button")
-                        .setAttribute(
-                            "onclick",
-                            `pauseTask(${task.id}, ${task.active_timer_id || ""})`
-                        );
-                    document
-                        .getElementById("resume_button")
-                        .setAttribute(
-                            "onclick",
-                            `resumeTask(${task.id}, ${task.active_timer_id || ""}, ${task.active_break_time_id || ""
-                            })`
-                        );
-                    document
-                        .getElementById("end_button")
-                        .setAttribute(
-                            "onclick",
-                            `endTask(${task.id}, ${task.active_timer_id || ""})`
-                        );
-
-                    // Hide all first
-                    [
-                        "start_button",
-                        "pause_button",
-                        "resume_button",
-                        "end_button",
-                    ].forEach((id) => (document.getElementById(id).style.display = "none"));
-
-                    switch (task.time_log_status) {
-                        case "not_started":
-                            document.getElementById("start_button").style.display =
-                                "inline-block";
-                            break;
-                        case "running":
-                            document.getElementById("pause_button").style.display =
-                                "inline-block";
-                            document.getElementById("end_button").style.display =
-                                "inline-block";
-                            break;
-                        case "paused":
-                            document.getElementById("resume_button").style.display =
-                                "inline-block";
-                            document.getElementById("end_button").style.display =
-                                "inline-block";
-                            break;
-                        case "ended":
-                            document.getElementById("start_button").style.display =
-                                "inline-block"; // allow restart
-                            break;
-                    }
-
-                    document.getElementById("taskDetailModal").style.display = "block";
-                } else {
-                    showMessage("Failed to fetch task details.", "error");
+                // Show/hide by time_log_status
+                ['start_button', 'pause_button', 'resume_button', 'end_button'].forEach(id => $('#' + id).style.display = 'none');
+                switch (task.time_log_status) {
+                    case 'not_started': $('#start_button').style.display = 'inline-block'; break;
+                    case 'running': $('#pause_button').style.display = 'inline-block'; $('#end_button').style.display = 'inline-block'; break;
+                    case 'paused': $('#resume_button').style.display = 'inline-block'; $('#end_button').style.display = 'inline-block'; break;
+                    case 'ended': $('#start_button').style.display = 'inline-block'; break;
                 }
-            } catch (error) {
-                console.error(error);
-                showMessage("Error fetching task details.", "error");
-            }
+
+                // Subtasks
+                ensureDemoSubtasks(task.id); renderModalSubtasks(task.id); updateAllProgress(task.id);
+                $('#taskDetailModal').style.display = 'block';
+            } catch (err) { console.error(err); toast('Error fetching task details', 'error'); }
         }
-
-        async function startTask(task_id) {
-            const response = await axios.get(
-                `http://127.0.0.1:8000/api/user-panel/tasks/${task_id}/start-task-timer`,
-                { headers: { Authorization: `Bearer ${localStorage.getItem("auth_token")}` } }
-            );
-
-            if (response.data.status === "success") {
-                closeTaskDetailModal();
-                showTaskDetails(task_id);
-                showMessage("Task Start successfully!", "success");
-            } else {
-                showMessage(response.data.message || "Task Start failed.", "error");
-            }
-        }
-
-        async function pauseTask(task_id, active_timer_id) {
-            const response = await axios.get(
-                `http://127.0.0.1:8000/api/user-panel/tasks/${task_id}/${active_timer_id}/pause-task-timer`,
-                { headers: { Authorization: `Bearer ${localStorage.getItem("auth_token")}` } }
-            );
-
-            if (response.data.status === "success") {
-                closeTaskDetailModal();
-                showTaskDetails(task_id);
-                showMessage("Task Pause successfully!", "success");
-            } else {
-                showMessage(response.data.message || "Task Pause failed.", "error");
-            }
-        }
-
-        async function resumeTask(task_id, active_timer_id, active_break_time_id) {
-            const response = await axios.get(
-                `http://127.0.0.1:8000/api/user-panel/tasks/${task_id}/${active_timer_id}/${active_break_time_id}/resume-task-timer`,
-                { headers: { Authorization: `Bearer ${localStorage.getItem("auth_token")}` } }
-            );
-
-            if (response.data.status === "success") {
-                closeTaskDetailModal();
-                showTaskDetails(task_id);
-                showMessage("Task Resume successfully!", "success");
-            } else {
-                showMessage(response.data.message || "Task Resume failed.", "error");
-            }
-        }
-
-        async function endTask(task_id, active_timer_id) {
-            const { value: memo } = await Swal.fire({
-                title: "End Task",
-                input: "text",
-                inputLabel: "Enter memo (optional)",
-                inputPlaceholder: "Type your memo here...",
-                showCancelButton: true,
-                confirmButtonText: "End Task",
-                cancelButtonText: "Cancel",
-            });
-
-            if (memo === undefined) return; // cancelled
-
-            try {
-                const response = await axios.post(
-                    `http://127.0.0.1:8000/api/user-panel/tasks/${task_id}/${active_timer_id}/stop-task-timer`,
-                    { memo },
-                    { headers: { Authorization: `Bearer ${localStorage.getItem("auth_token")}` } }
-                );
-
-                if (response.data.status === "success") {
-                    closeTaskDetailModal();
-                    showTaskDetails(task_id);
-                    showMessage("Task End successfully!", "success");
-                } else {
-                    showMessage(response.data.message || "Task End failed.", "error");
-                }
-            } catch (err) {
-                console.error(err);
-                showMessage("Error ending task.", "error");
-            }
-        }
-
         function closeTaskDetailModal() {
-            const statusFilter = document.getElementById("statusFilter").value;
-            const searchValue = document
-                .getElementById("taskFilter")
-                .value.toLowerCase();
-
-            if (searchValue.length >= 3 || searchValue.length === 0) {
-                fetchTaskData(searchValue, statusFilter);
-            }
-
-            document.getElementById("taskDetailModal").style.display = "none";
+            const status = $('#statusFilter').value; const search = ($('#searchBox').value || '').toLowerCase();
+            if (search.length >= 3 || search.length === 0) { loadTasks(search, status); }
+            $('#taskDetailModal').style.display = 'none';
         }
 
-        // ---- Table ----
-        function renderTasks() {
-            tableBody.innerHTML = "";
-
-            tasks.forEach((task) => {
-                const row = document.createElement("tr");
-
-                const statusClass =
-                    {
-                        not_started: "status-not-started",
-                        running: "status-running",
-                        paused: "status-paused",
-                        ended: "status-ended",
-                    }[task.time_log_status] || "status-unknown";
-
-                const formattedStatus = (task.time_log_status || "")
-                    .replace(/_/g, " ")
-                    .toLowerCase()
-                    .replace(/\b\w/g, (char) => char.toUpperCase());
-
-                row.innerHTML = `
-            <td>${task.id}</td>
-            <td>${task.task_short_code || "-"}</td>
-            <td>${task.heading || "-"}</td>
-            <td>${formatDateShort(task.start_date)}</td>
-            <td>${formatDateShort(task.due_date)}</td>
-            <td>${task.working_time || "--:--:--"}</td>
-            <td>
-              <span>${task.status || "-"}</span>
-              <span class="${statusClass}"> (${formattedStatus || "-"})</span>
-            </td>
-            <td>
-              <button class="btn btn-details" onclick="showTaskDetails(${task.id})">Details</button>
-            </td>
-          `;
-
-                tableBody.appendChild(row);
-            });
+        // ===== Actions =====
+        async function startTask(task_id) {
+            const res = await axios.get(`http://127.0.0.1:8000/api/user-panel/tasks/${task_id}/start-task-timer`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` } });
+            if (res.data.status === 'success') { toast('Task started'); showTaskDetails(task_id); } else { toast(res.data.message || 'Start failed', 'error'); }
         }
-
-        async function fetchTaskData(
-            search_value = "",
-            status = "",
-            order_column = "id",
-            order_type = "asc"
-        ) {
+        async function pauseTask(task_id, active_timer_id) {
+            const res = await axios.get(`http://127.0.0.1:8000/api/user-panel/tasks/${task_id}/${active_timer_id}/pause-task-timer`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` } });
+            if (res.data.status === 'success') { toast('Task paused'); showTaskDetails(task_id); } else { toast(res.data.message || 'Pause failed', 'error'); }
+        }
+        async function resumeTask(task_id, active_timer_id, active_break_time_id) {
+            const res = await axios.get(`http://127.0.0.1:8000/api/user-panel/tasks/${task_id}/${active_timer_id}/${active_break_time_id}/resume-task-timer`, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` } });
+            if (res.data.status === 'success') { toast('Task resumed'); showTaskDetails(task_id); } else { toast(res.data.message || 'Resume failed', 'error'); }
+        }
+        async function endTask(task_id, active_timer_id) {
+            const { value: memo } = await Swal.fire({ title: 'End Task', input: 'text', inputLabel: 'Enter memo (optional)', inputPlaceholder: 'Type your memo here...', showCancelButton: true, confirmButtonText: 'End Task', cancelButtonText: 'Cancel' });
+            if (memo === undefined) return; // cancelled
             try {
-                const response = await axios.get(
-                    "http://127.0.0.1:8000/api/user-panel/tasks",
-                    {
-                        headers: { Authorization: `Bearer ${localStorage.getItem("auth_token")}` },
-                        params: {
-                            search: search_value,
-                            order_column,
-                            order_type,
-                            status,
-                        },
-                    }
-                );
-
-                if (response.data.success) {
-                    tasks = response.data.result.tasks || [];
-                    renderTasks();
-                } else {
-                    showMessage("Failed to fetch tasks.", "error");
-                }
-            } catch (error) {
-                console.error("Fetch tasks error:", error);
-                showMessage("Failed to fetch tasks. Please try again.", "error");
-            }
+                const res = await axios.post(`http://127.0.0.1:8000/api/user-panel/tasks/${task_id}/${active_timer_id}/stop-task-timer`, { memo }, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` } });
+                if (res.data.status === 'success') { toast('Task ended'); showTaskDetails(task_id); } else { toast(res.data.message || 'End failed', 'error'); }
+            } catch (err) { console.error(err); toast('Error ending task', 'error'); }
         }
 
-        function filterTasks() {
-            const statusFilter = document.getElementById("statusFilter").value;
-            const searchValue = document
-                .getElementById("taskFilter")
-                .value.toLowerCase();
-
-            // Only hit API when >=3 chars or cleared
-            if (searchValue.length >= 3 || searchValue.length === 0) {
-                fetchTaskData(searchValue, statusFilter);
+        // ===== New Task Modal =====
+        async function openNewTaskModal() {
+            try {
+                const data = await fetchCreateData();
+                if (!data.success) return toast('Failed to fetch create data', 'error');
+                const createData = data.result;
+                const priority = document.getElementById('taskPriority');
+                priority.innerHTML = '<option value="">Select Priority</option>';
+                (createData.priorities || []).forEach(p => priority.innerHTML += `<option value="${p}">${p}</option>`);
+                const project = document.getElementById('taskProject');
+                project.innerHTML = '<option value="">Select Project</option>';
+                (createData.projects || []).forEach(p => { const id = p.id ?? p.value ?? ''; const name = p.project_name ?? p.name ?? 'Unnamed'; project.innerHTML += `<option value="${id}">${name}</option>`; });
+                document.getElementById('newTaskModal').style.display = 'block';
+            } catch (err) { console.error(err); toast('Failed to fetch create data', 'error'); }
+        }
+        function closeNewTaskModal() { document.getElementById('newTaskModal').style.display = 'none'; }
+        async function createTask() {
+            const payload = {
+                title: document.getElementById('taskTitle').value.trim(),
+                project_id: document.getElementById('taskProject').value || null,
+                start_date: dmy(document.getElementById('taskStart').value),
+                end_date: dmy(document.getElementById('taskEnd').value),
+                priority: document.getElementById('taskPriority').value,
+                description: document.getElementById('taskDescription').value || null
             }
+            try {
+                const res = await axios.post('http://127.0.0.1:8000/api/user-panel/tasks/store', payload, { headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` } });
+                if (res.data.success) { toast('Task created'); closeNewTaskModal(); loadTasks('', '1'); } else { toast('Failed to create task', 'error'); }
+            } catch (err) { console.error(err); toast('Failed to create task', 'error'); }
+        }
+
+        // ===== Filters & Load =====
+        function debouncedSearch() { clearTimeout(searchTimer); searchTimer = setTimeout(() => applyFilters(), 280); }
+        function applyFilters() { const status = document.getElementById('statusFilter').value; const search = (document.getElementById('searchBox').value || '').toLowerCase(); if (search.length >= 3 || search.length === 0) loadTasks(search, status); }
+
+        async function loadTasks(search_value = '', status = '1', order_column = 'id', order_type = 'asc') {
+            try {
+                const data = await fetchTasks({ search: search_value, status, order_column, order_type });
+                if (data.success) {
+                    tasks = data.result.tasks || [];
+                    // Ensure demo subtasks exist for all tasks so cards look alive
+                    tasks.forEach(t => ensureDemoSubtasks(t.id));
+                    renderCards();
+                } else { toast('Failed to fetch tasks', 'error'); }
+            } catch (err) { console.error('Fetch tasks error', err); toast('Failed to fetch tasks', 'error'); }
         }
 
         function init() {
-            if (!localStorage.getItem("auth_token")) {
-                window.location.href = "./../../pages/authentication/login.html";
-                return;
-            }
-            document.getElementById("userName").textContent =
-                localStorage.getItem("user_name") || "Anonymous User";
-            fetchTaskData("", "1");
+            if (!localStorage.getItem('auth_token')) { location.href = './../../pages/authentication/login.html'; return; }
+            document.getElementById('userName').textContent = localStorage.getItem('user_name') || 'Anonymous User';
+            loadTasks('', '1');
         }
-
         init();
     </script>
 </body>
