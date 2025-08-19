@@ -306,7 +306,7 @@
 
         async function fetchInitialData() {
             try {
-                const response = await axios.get('http://127.0.0.1:8000/api/user-panel/dashboard', {
+                const response = await axios.get('https://erp.abidurrahman.com/api/user-panel/dashboard', {
                     headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
                 });
 
@@ -356,7 +356,7 @@
 
         async function handleCheckIn() {
             try {
-                const response = await axios.post('http://127.0.0.1:8000/api/user-panel/check-in', {
+                const response = await axios.post('https://erp.abidurrahman.com/api/user-panel/check-in', {
                     'working_from': null,
                     'location': '1',
                     'work_from_type': 'home',
@@ -395,7 +395,7 @@
 
         async function handleCheckOut() {
             try {
-                const response = await axios.post('http://127.0.0.1:8000/api/user-panel/check-out', {
+                const response = await axios.post('https://erp.abidurrahman.com/api/user-panel/check-out', {
                     'id': attendanceState.attendanceId,
                     'currentLatitude': null,
                     'currentLongitude': null,
@@ -448,8 +448,8 @@
 
             try {
                 const endpoint = attendanceState.isOnBreak
-                    ? `http://127.0.0.1:8000/api/user-panel/end-break/${attendanceState.attendanceId}`
-                    : `http://127.0.0.1:8000/api/user-panel/start-break/${attendanceState.attendanceId}`;
+                    ? `https://erp.abidurrahman.com/api/user-panel/end-break/${attendanceState.attendanceId}`
+                    : `https://erp.abidurrahman.com/api/user-panel/start-break/${attendanceState.attendanceId}`;
                 
                 const response = await axios.post(endpoint, {}, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
@@ -498,7 +498,7 @@
                     await handleBreak();
                 }
                 
-                const response = await axios.post('http://127.0.0.1:8000/api/user-panel/my-account/logout', {}, {
+                const response = await axios.post('https://erp.abidurrahman.com/api/user-panel/my-account/logout', {}, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
                 });
 
