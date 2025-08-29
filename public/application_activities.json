@@ -1,0 +1,16 @@
+[
+  {
+    "attendance_id": 1,
+    "app_name": "Electron",
+    "app_title": "desktop-tracker",
+    "total_second": 1,
+    "is_already_uploaded": false
+  },
+  {
+    "attendance_id": 1,
+    "app_name": "Visual Studio Code",
+    "app_title": "main.js - desktop-tracker",
+    "total_second": 1,
+    "is_already_uploaded": false
+  }
+]
